@@ -1,36 +1,666 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AnimeVerse</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AnimeStream - Modern Anime Streaming</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            font-family: 'Inter', sans-serif;
+            color: #ededee;
+            overflow-x: hidden;
+        }
+
+        /* custom scroll */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e2a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 10px;
+        }
+
+        /* navbar */
+        .navbar {
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c084fc, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .logo i {
+            background: none;
+            color: #a855f7;
+            margin-right: 6px;
+        }
+        .nav-links a {
+            color: #b0b0c0;
+            margin-left: 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #c084fc;
+        }
+
+        /* main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 3rem;
+        }
+
+        /* hero section */
+        .hero {
+            margin-bottom: 3rem;
+            background: linear-gradient(145deg, #111118, #0b0b12);
+            border-radius: 2rem;
+            padding: 2rem 2rem;
+            border: 1px solid #2d2d3a;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+        }
+        .hero p {
+            color: #b9b9cf;
+            margin-top: 0.5rem;
+            max-width: 600px;
+        }
+        .badge-purple {
+            background: #3b0764;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 1rem;
+            color: #e9c0ff;
+        }
+
+        /* anime grid */
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 1.5rem 0 1.2rem 0;
+            border-left: 5px solid #a855f7;
+            padding-left: 1rem;
+        }
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 3rem;
+        }
+        .anime-card {
+            background: #13131c;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: 1px solid #292935;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+        }
+        .anime-card:hover {
+            transform: translateY(-8px);
+            border-color: #7c3aed;
+            box-shadow: 0 20px 28px -12px #7c3aed40;
+        }
+        .card-img {
+            background: #20202a;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+        .card-info {
+            padding: 1rem;
+        }
+        .card-info h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .meta {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #a78bfa;
+        }
+        /* details panel */
+        .details-panel {
+            background: #0e0e16;
+            border-radius: 1.5rem;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #2a2a35;
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .details-header {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .detail-cover {
+            width: 180px;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #1f1f2b;
+        }
+        .detail-cover img {
+            width: 100%;
+            display: block;
+        }
+        .detail-info {
+            flex: 1;
+        }
+        .anime-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .alt-titles {
+            color: #b9b9dc;
+            font-size: 0.9rem;
+            margin-bottom: 0.7rem;
+        }
+        .info-badge-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+        }
+        .info-badge {
+            background: #1e1e2c;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .synopsis {
+            margin: 1rem 0;
+            line-height: 1.5;
+            color: #cdcdff;
+            max-width: 800px;
+        }
+        .anime-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px,1fr));
+            gap: 0.6rem;
+            margin: 1rem 0;
+            background: #0a0a10;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+        }
+        .stat-item {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .stat-label {
+            font-weight: 600;
+            color: #b48ef7;
+        }
+        .episodes-section {
+            margin-top: 2rem;
+        }
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(85px, 100px));
+            gap: 12px;
+            margin-top: 1rem;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 0.5rem 0.2rem;
+        }
+        .episode-card {
+            background: #1b1b28;
+            border-radius: 12px;
+            text-align: center;
+            padding: 10px 5px;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #2f2f3e;
+        }
+        .episode-card:hover {
+            background: #2d2d42;
+            border-color: #a855f7;
+        }
+        .episode-num {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        .server-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .server-btn {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: #2c2c3a;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .server-btn.sub {
+            background: #4c1d95;
+        }
+        .server-btn.dub {
+            background: #2d3748;
+        }
+        .server-btn:hover {
+            filter: brightness(1.2);
+        }
+        .player-wrapper {
+            margin-top: 2rem;
+            background: #08080e;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            border: 1px solid #3b3b4b;
+        }
+        .player-iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 0.8rem;
+            background: black;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+            color: #a78bfa;
+        }
+        .back-button {
+            background: #2a2a38;
+            border: none;
+            color: #eee;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #23232e;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #6b6b89;
+        }
+        @media (max-width: 700px) {
+            .container {
+                padding: 1rem;
+            }
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            .details-header {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">AnimeVerse</div>
-
-    <div class="search-box">
-        <input type="text" placeholder="Search Anime...">
+<div class="navbar">
+    <div class="logo">
+        <i class="fas fa-play-circle"></i> AnimeStream
     </div>
-</header>
-
-<section class="hero">
-    <div class="hero-content">
-        <h1>Watch Anime Online</h1>
-
-        <p>
-            Stream latest anime series and movies in HD SUB & DUB.
-        </p>
-
-        <a href="#trending" class="hero-btn">Watch Now</a>
+    <div class="nav-links">
+        <a href="#" class="active" id="homeNav">Home</a>
+        <a href="#">Library</a>
+        <a href="#">Trending</a>
     </div>
-</section>
+</div>
 
-<h2 class="section-title">Trending Anime</h2>
+<div class="container" id="appContainer">
+    <div class="hero">
+        <h1><i class="fas fa-tv" style="color:#a855f7"></i> Stream Anime, Anywhere</h1>
+        <p>Watch sub & dub seamlessly. Powered by megaplay.buzz & MyAnimeList. Dark elegant UI inspired by hianime, 9anime.</p>
+        <div class="badge-purple"><i class="fas fa-meteor"></i> 2000+ Episodes | Instant Streaming</div>
+    </div>
 
-<div class="anime-grid" id="anime-list"></div>
+    <div id="animeListSection">
+        <div class="section-title"><i class="fas fa-film"></i> Your Anime Collection (MAL IDs)</div>
+        <div class="anime-grid" id="animeGrid"></div>
+    </div>
 
-<script src="assets/js/app.js"></script>
+    <!-- Details Panel (hidden until anime clicked) -->
+    <div id="detailsPanel" class="details-panel">
+        <button id="closeDetailsBtn" class="back-button"><i class="fas fa-arrow-left"></i> Back to list</button>
+        <div id="animeDetailContent"></div>
+    </div>
+</div>
 
+<footer>
+    <p>© AnimeStream — Unofficial streaming links via megaplay.buzz. All rights to respective owners.</p>
+</footer>
+
+<script>
+    // ################################################################
+    // CONFIGURATION: add your MAL IDs here or fetch from external JSON
+    // For production, you can replace this array with remote "anime-config.json"
+    // The website automatically fetches full details + episodes from Jikan API.
+    // Episodes array is generated dynamically according to spec (sub/dub links)
+    // ################################################################
+    const MAL_ID_LIST = [38000, 35000, 32340];  // Kimetsu Movie, Haikyuu To The Top, Mob Psycho 100 II
+    
+    // Optional: If you want to load from external "anime-ids.json" uncomment fetch below
+    // but default uses above list as fallback.
+    
+    let animeCache = new Map(); // store fetched anime data (full + episode count)
+    let currentAnimeId = null;
+    let currentEpisodesArray = []; // store episode objects for current anime
+
+    // Helper: fetch anime details from Jikan API v4
+    async function fetchAnimeDetails(malId) {
+        if (animeCache.has(malId)) return animeCache.get(malId);
+        try {
+            const response = await fetch(`https://api.jikan.moe/v4/anime/${malId}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const anime = data.data;
+            // episode count fallback
+            let episodeCount = anime.episodes || (anime.type === 'Movie' ? 1 : 0);
+            if (episodeCount === 0 && anime.type !== 'Movie') episodeCount = 12; // safe fallback
+            if (anime.type === 'Movie') episodeCount = 1;
+            const fullData = { ...anime, episodeCount: episodeCount };
+            animeCache.set(malId, fullData);
+            return fullData;
+        } catch (err) {
+            console.error(`Failed fetch mal_id=${malId}`, err);
+            return null;
+        }
+    }
+
+    // Build EPISODES array exactly as requested format: [{ episode: '1', servers: [{sub:..., value:...},{dub:...,value:...}] }]
+    function buildEpisodesArray(malId, episodeCount) {
+        const episodes = [];
+        for (let i = 1; i <= episodeCount; i++) {
+            const subUrl = `https://megaplay.buzz/stream/mal/${malId}/${i}/sub`;
+            const dubUrl = `https://megaplay.buzz/stream/mal/${malId}/${i}/dub`;
+            episodes.push({
+                episode: i.toString(),
+                servers: [
+                    { sub: 'Vidrock', value: subUrl },
+                    { dub: 'Vidplus', value: dubUrl }
+                ]
+            });
+        }
+        return episodes;
+    }
+
+    // Render anime cards on home
+    async function renderAnimeCards() {
+        const grid = document.getElementById('animeGrid');
+        grid.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i> Loading anime collection...</div>';
+        const animeItems = [];
+        for (const id of MAL_ID_LIST) {
+            const animeData = await fetchAnimeDetails(id);
+            if (animeData) {
+                animeItems.push({ id, data: animeData });
+            }
+        }
+        if (animeItems.length === 0) {
+            grid.innerHTML = '<div style="color:gray; text-align:center;">No anime found. Update MAL IDs list.</div>';
+            return;
+        }
+        grid.innerHTML = '';
+        for (const item of animeItems) {
+            const anime = item.data;
+            const card = document.createElement('div');
+            card.className = 'anime-card';
+            card.setAttribute('data-id', item.id);
+            const imgUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/220x300?text=No+Cover';
+            card.innerHTML = `
+                <div class="card-img">
+                    <img src="${imgUrl}" alt="${anime.title}" loading="lazy">
+                </div>
+                <div class="card-info">
+                    <h3>${anime.title || 'Untitled'}</h3>
+                    <div class="meta">
+                        <span><i class="fas fa-star" style="color:#fbbf24"></i> ${anime.score || '?'}</span>
+                        <span><i class="fas fa-video"></i> ${anime.type || 'TV'}</span>
+                    </div>
+                </div>
+            `;
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showAnimeDetails(item.id);
+            });
+            grid.appendChild(card);
+        }
+    }
+
+    // Display detailed anime info + episode list + player
+    async function showAnimeDetails(malId) {
+        currentAnimeId = malId;
+        const animeData = await fetchAnimeDetails(malId);
+        if (!animeData) {
+            alert("Couldn't load anime details");
+            return;
+        }
+        const episodeCount = animeData.episodeCount;
+        // generate episodes array (matching spec)
+        const episodesArray = buildEpisodesArray(malId, episodeCount);
+        currentEpisodesArray = episodesArray;
+
+        // Build "ANIME INFO FORMAT" as per requirement using <p> tags and structure inside custom container
+        const title = animeData.title_english || animeData.title || 'N/A';
+        const otherTitles = [animeData.title_japanese, animeData.title_synonyms?.join(', ')].filter(Boolean).join(' | ') || '—';
+        const type = animeData.type || 'Unknown';
+        const episodesCountShow = animeData.episodes || (animeData.type === 'Movie' ? 1 : '?');
+        const dubEpisodes = episodesCountShow === '?' ? 'N/A' : episodesCountShow;
+        const synopsis = animeData.synopsis || 'No synopsis available.';
+        const country = 'Japan';  // default
+        const genres = animeData.genres?.map(g => g.name).join(', ') || 'N/A';
+        const premiered = animeData.season ? `${animeData.season?.charAt(0).toUpperCase() + animeData.season?.slice(1)} ${animeData.year || ''}` : (animeData.aired?.string?.split(' to')[0] || 'N/A');
+        const dateAired = animeData.aired?.string || 'Unknown';
+        const broadcast = animeData.broadcast?.string || 'Unknown';
+        const episodesLabel = episodesCountShow;
+        const duration = animeData.duration || 'Unknown';
+        const status = animeData.status || 'Unknown';
+        const score = animeData.score || 'N/A';
+        const studios = animeData.studios?.map(s => s.name).join(', ') || 'N/A';
+        const producers = animeData.producers?.map(p => p.name).join(', ') || 'N/A';
+        const malLink = `https://myanimelist.net/anime/${malId}/`;
+
+        // HTML info section exactly as requested: paragraphs with specific content
+        const infoHtml = `
+            <div class="details-header">
+                <div class="detail-cover">
+                    <img src="${animeData.images?.jpg?.large_image_url || animeData.images?.jpg?.image_url || ''}" alt="${title}">
+                </div>
+                <div class="detail-info">
+                    <div class="anime-title">${escapeHtml(title)}</div>
+                    <div class="alt-titles">Other Titles: ${escapeHtml(otherTitles)}</div>
+                    <div class="info-badge-line">
+                        <span class="info-badge"><i class="fas fa-certificate"></i> PG</span>
+                        <span class="info-badge"><i class="fas fa-play"></i> CC: ${episodesCountShow} ep</span>
+                        <span class="info-badge"><i class="fas fa-headphones"></i> DUB: ${dubEpisodes}</span>
+                        <span class="info-badge"><i class="fas fa-layer-group"></i> ${type}</span>
+                    </div>
+                    <div class="synopsis">${escapeHtml(synopsis)}</div>
+                </div>
+            </div>
+            <div class="anime-stats-grid">
+                <div class="stat-item"><span class="stat-label">Country:</span> ${escapeHtml(country)}</div>
+                <div class="stat-item"><span class="stat-label">Genres:</span> ${escapeHtml(genres)}</div>
+                <div class="stat-item"><span class="stat-label">Premiered:</span> ${escapeHtml(premiered)}</div>
+                <div class="stat-item"><span class="stat-label">Date aired:</span> ${escapeHtml(dateAired)}</div>
+                <div class="stat-item"><span class="stat-label">Broadcast:</span> ${escapeHtml(broadcast)}</div>
+                <div class="stat-item"><span class="stat-label">Episodes:</span> ${escapeHtml(episodesLabel)}</div>
+                <div class="stat-item"><span class="stat-label">Duration:</span> ${escapeHtml(duration)}</div>
+                <div class="stat-item"><span class="stat-label">Status:</span> ${escapeHtml(status)}</div>
+                <div class="stat-item"><span class="stat-label">Scores:</span> ${escapeHtml(score)}</div>
+                <div class="stat-item"><span class="stat-label">Studios:</span> ${escapeHtml(studios)}</div>
+                <div class="stat-item"><span class="stat-label">Producers:</span> ${escapeHtml(producers)}</div>
+                <div class="stat-item"><span class="stat-label">Links:</span> <a href="${malLink}" target="_blank" rel="noopener noreferrer" style="color:#c084fc">MAL</a></div>
+            </div>
+        `;
+
+        // Build episode section based on generated episodesArray
+        let episodesHtml = `<div class="episodes-section"><h3><i class="fas fa-list"></i> Episodes (Sub / Dub)</h3><div class="episodes-grid" id="episodesGridContainer"></div></div>`;
+        episodesHtml += `<div class="player-wrapper" id="playerWrapper" style="display: none;">
+                            <iframe id="streamIframe" class="player-iframe" allowfullscreen></iframe>
+                         </div>`;
+
+        const detailContainer = document.getElementById('animeDetailContent');
+        detailContainer.innerHTML = infoHtml + episodesHtml;
+
+        // populate episode grid
+        const episodesGrid = document.getElementById('episodesGridContainer');
+        episodesGrid.innerHTML = '';
+        currentEpisodesArray.forEach(ep => {
+            const epDiv = document.createElement('div');
+            epDiv.className = 'episode-card';
+            const subServer = ep.servers.find(s => s.sub);
+            const dubServer = ep.servers.find(s => s.dub);
+            epDiv.innerHTML = `
+                <div class="episode-num">EP ${ep.episode}</div>
+                <div class="server-buttons">
+                    <button class="server-btn sub" data-url="${subServer?.value || ''}" data-type="sub">SUB</button>
+                    <button class="server-btn dub" data-url="${dubServer?.value || ''}" data-type="dub">DUB</button>
+                </div>
+            `;
+            // attach play event
+            const subBtn = epDiv.querySelector('.server-btn.sub');
+            const dubBtn = epDiv.querySelector('.server-btn.dub');
+            if (subBtn) subBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const url = subBtn.getAttribute('data-url');
+                if (url) playStream(url, `Episode ${ep.episode} - SUB (Vidrock)`);
+                else alert("Stream URL not available");
+            });
+            if (dubBtn) dubBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const url = dubBtn.getAttribute('data-url');
+                if (url) playStream(url, `Episode ${ep.episode} - DUB (Vidplus)`);
+                else alert("Stream URL not available");
+            });
+            episodesGrid.appendChild(epDiv);
+        });
+
+        // show panel and hide anime grid
+        document.getElementById('animeListSection').style.display = 'none';
+        document.getElementById('detailsPanel').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function playStream(url, label) {
+        const playerWrapper = document.getElementById('playerWrapper');
+        const iframe = document.getElementById('streamIframe');
+        if (!playerWrapper || !iframe) return;
+        iframe.src = url;
+        playerWrapper.style.display = 'block';
+        // scroll to player
+        playerWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function closeDetails() {
+        document.getElementById('animeListSection').style.display = 'block';
+        document.getElementById('detailsPanel').style.display = 'none';
+        const playerWrapper = document.getElementById('playerWrapper');
+        const iframe = document.getElementById('streamIframe');
+        if (playerWrapper) playerWrapper.style.display = 'none';
+        if (iframe) iframe.src = '';
+        currentAnimeId = null;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // optional: fetch external config from anime-config.json (MAL IDs)
+    async function loadMALIdsFromConfig() {
+        try {
+            const response = await fetch('anime-config.json');
+            if (response.ok) {
+                const config = await response.json();
+                if (Array.isArray(config.mal_ids) && config.mal_ids.length) {
+                    MAL_ID_LIST.length = 0;
+                    MAL_ID_LIST.push(...config.mal_ids);
+                } else if (Array.isArray(config)) {
+                    MAL_ID_LIST.length = 0;
+                    MAL_ID_LIST.push(...config);
+                }
+            }
+        } catch (err) {
+            console.log("No external config, using default MAL IDs.");
+        }
+    }
+
+    async function init() {
+        await loadMALIdsFromConfig();
+        await renderAnimeCards();
+        // close details button
+        document.getElementById('closeDetailsBtn').addEventListener('click', () => closeDetails());
+        document.getElementById('homeNav')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (document.getElementById('detailsPanel').style.display === 'block') closeDetails();
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    init();
+</script>
 </body>
 </html>
