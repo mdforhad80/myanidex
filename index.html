@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeStream - Watch Anime Online</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #0f0f13;
+            --card-bg: #1a1a24;
+            --primary: #764abc; /* Purple */
+            --accent: #9b5de5;
+            --text: #ffffff;
+            --text-sec: #a0a0b0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding-bottom: 50px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 15, 19, 0.95);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #333;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary); text-decoration: none; }
+        .logo span { color: white; }
+
+        /* Search Bar */
+        #search-bar {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            width: 300px;
+            outline: none;
+        }
+        #search-bar:focus { border-color: var(--primary); }
+
+        /* Hero Section */
+        .hero {
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+            background-size: cover;
+            background-position: center;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, var(--bg-color), transparent);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 600px; }
+        .hero-title { font-size: 3rem; margin-bottom: 10px; text-shadow: 0 2px 10px black; }
+        .hero-info { display: flex; gap: 15px; margin-bottom: 20px; color: var(--text-sec); }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .btn:hover { background: var(--accent); transform: translateY(-2px); }
+
+        /* Grid Section */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .section-title { margin: 40px 0 20px; font-size: 1.5rem; border-left: 4px solid var(--primary); padding-left: 15px; }
+        
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .anime-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        .anime-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        
+        .anime-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .card-info { padding: 15px; }
+        .card-title { font-size: 1rem; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 0.8rem; color: var(--text-sec); display: flex; justify-content: space-between; }
+        .card-score { color: #ffd700; font-weight: bold; }
+
+        /* Footer */
+        footer { text-align: center; padding: 40px; color: var(--text-sec); border-top: 1px solid #333; margin-top: 50px; }
+
+        /* Mobile Responsiveness */
+        @media(max-width: 768px) {
+            .hero { height: 300px; padding: 20px; }
+            .hero-title { font-size: 2rem; }
+            header { padding: 15px; }
+            #search-bar { width: 150px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">ENMA<span>CLOON</span></a>
+        <input type="text" id="search-bar" placeholder="Search Anime...">
+        <!-- Provider Toggle (Simple implementation for demo) -->
+        <select id="provider-select" style="background:var(--card-bg); color:white; padding:8px; border-radius:5px; border:1px solid #333;">
+            <option value="hianime">HiAnime</option>
+            <option value="gogoanime">GogoAnime</option>
+        </select>
+    </header>
+
+    <!-- Hero (Featured) -->
+    <div id="hero-section" class="hero">
+        <!-- JS will inject featured anime here -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="section-title">Latest Episodes</div>
+        <div class="anime-grid" id="anime-grid">
+            <!-- JS will inject cards here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 AnimeStream. All data provided via JSON.</p>
+    </footer>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+        
+        let animeData = [];
+
+        // 1. Fetch Data
+        async function loadAnime() {
+            try {
+                const response = await fetch('anime.json');
+                animeData = await response.json();
+                renderFeatured(animeData);
+                renderGrid(animeData);
+            } catch (error) {
+                console.error("Error loading JSON:", error);
+                document.getElementById('anime-grid').innerHTML = "<p>Error loading data. Make sure you are running this on a server (Localhost) or Cloudflare Pages.</p>";
+            }
+        }
+
+        // 2. Render Featured
+        function renderFeatured(data) {
+            const featured = data.find(a => a.featured === true);
+            const heroSection = document.getElementById('hero-section');
+            
+            if(featured) {
+                heroSection.style.backgroundImage = `linear-gradient(to top, #0f0f13, transparent), url('${featured.image}')`;
+                heroSection.innerHTML = `
+                    <div class="hero-content">
+                        <h1 class="hero-title">${featured.title}</h1>
+                        <div class="hero-info">
+                            <span>${featured.year}</span>
+                            <span>${featured.type}</span>
+                            <span>${featured.status}</span>
+                            <span>⭐ ${featured.score}</span>
+                        </div>
+                        <p style="margin-bottom: 20px; color: #ccc;">${featured.synopsis}</p>
+                        <button class="btn" onclick="playAnime('${featured.id}')">▶ Watch Now</button>
+                    </div>
+                `;
+            }
+        }
+
+        // 3. Render Grid
+        function renderGrid(data) {
+            const grid = document.getElementById('anime-grid');
+            grid.innerHTML = '';
+
+            data.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+                card.onclick = () => playAnime(anime.id);
+
+                card.innerHTML = `
+                    <img src="${anime.image}" alt="${anime.title}">
+                    <div class="card-info">
+                        <div class="card-title">${anime.title}</div>
+                        <div class="card-meta">
+                            <span>${anime.year}</span>
+                            <span class="card-score">⭐ ${anime.score}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 4. Player Logic (Simulates streaming)
+        function playAnime(id) {
+            const anime = animeData.find(a => a.id === id);
+            const provider = document.getElementById('provider-select').value;
+            
+            if(!anime) return;
+
+            const embedId = anime.embed_providers[provider];
+            
+            let url = "";
+            // Construct the URL based on provider
+            if(provider === "hianime") {
+                url = `https://hianime.to/watch/${embedId}`;
+            } else if (provider === "gogoanime") {
+                url = `https://anitaku.gg/category/${embedId}`;
+            }
+
+            // Open in new tab
+            window.open(url, '_blank');
+        }
+
+        // 5. Search Functionality
+        document.getElementById('search-bar').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = animeData.filter(anime => 
+                anime.title.toLowerCase().includes(term) ||
+                anime.title_japanese.includes(term)
+            );
+            renderGrid(filtered);
+        });
+
+        // Init
+        loadAnime();
+    </script>
+</body>
+</html>
