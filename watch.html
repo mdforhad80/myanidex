@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Watch Anime Online - NovaAnime">
+    <meta property="og:title" content="Watch Anime - NovaAnime">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0b0b0f">
+    <link rel="manifest" href="/manifest.json">
+    <title>Watch - NovaAnime</title>
+    <style>
+        :root {
+            --bg: #0b0b0f;
+            --bg2: #121218;
+            --bg3: #1a1a24;
+            --accent: #8b5cf6;
+            --accent2: #d946ef;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --glass: rgba(18, 18, 24, 0.85);
+            --glass-border: rgba(139, 92, 246, 0.2);
+            --glow: 0 0 25px rgba(139, 92, 246, 0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        body::-webkit-scrollbar { width: 6px; }
+        body::-webkit-scrollbar-track { background: var(--bg); }
+        body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 1.5rem;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+        .nav-logo .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: var(--glow);
+        }
+        .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .nav-actions a {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        .nav-actions a:hover { color: #fff; background: rgba(139,92,246,0.15); }
+
+        .watch-layout {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .player-section { flex: 1; min-width: 0; }
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .player-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            z-index: 2;
+        }
+        .player-loading.hidden { display: none; }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--bg3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .player-controls {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.35);
+        }
+        .btn-primary:hover { box-shadow: 0 6px 30px rgba(217,70,239,0.55); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background: rgba(139,92,246,0.1); }
+        .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+        .server-select {
+            padding: 10px 16px;
+            border-radius: 50px;
+            background: var(--bg2);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+        .server-select:focus { border-color: var(--accent); }
+        .type-toggle {
+            display: flex;
+            background: var(--bg2);
+            border-radius: 50px;
+            padding: 3px;
+            border: 1px solid var(--glass-border);
+        }
+        .type-toggle button {
+            padding: 7px 16px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+        .type-toggle button.active { background: var(--accent); color: #fff; }
+
+        .episode-title-bar {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--bg2);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Sidebar */
+        .related-sidebar {
+            width: 320px;
+            min-width: 280px;
+            background: var(--bg2);
+            border-radius: var(--radius);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            position: sticky;
+            top: 70px;
+        }
+        .related-sidebar h3 { font-size: 1rem; margin-bottom: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .episode-list { display: flex; flex-direction: column; gap: 0.4rem; }
+        .ep-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.85rem;
+            border: 1px solid transparent;
+        }
+        .ep-item:hover, .ep-item.active {
+            background: rgba(139,92,246,0.1);
+            border-color: var(--accent);
+        }
+        .ep-item .ep-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex-shrink: 0;
+        }
+        .ep-item.active .ep-dot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .ep-item .ep-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @media (max-width: 900px) {
+            .watch-layout { flex-direction: column; padding: 0.5rem; }
+            .related-sidebar { width: 100%; min-width: auto; max-height: 400px; position: static; }
+            .player-controls { gap: 0.5rem; }
+            .btn { padding: 8px 14px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-icon">✦</span> NovaAnime
+        </a>
+        <div class="nav-actions">
+            <a href="index.html">Home</a>
+            <a href="search.html">Browse</a>
+        </div>
+    </nav>
+
+    <div class="watch-layout">
+        <div class="player-section">
+            <div class="player-wrapper" id="playerWrapper">
+                <div class="player-loading" id="playerLoading">
+                    <div class="spinner"></div>
+                </div>
+                <iframe id="videoPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            
+            <div class="episode-title-bar" id="episodeTitle">Loading...</div>
+            
+            <div class="player-controls">
+                <button class="btn btn-primary btn-sm" id="prevEpBtn" onclick="changeEpisode(-1)">⏮ Prev</button>
+                <button class="btn btn-outline btn-sm" id="nextEpBtn" onclick="changeEpisode(1)">Next ⏭</button>
+                <div class="type-toggle">
+                    <button id="subBtn" class="active" onclick="switchType('sub')">Sub</button>
+                    <button id="dubBtn" onclick="switchType('dub')">Dub</button>
+                </div>
+                <select class="server-select" id="serverSelect" onchange="switchServer()">
+                    <option value="vidrock">Vidrock</option>
+                    <option value="vidplus">Vidplus</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="toggleTheater()">🎬 Theater</button>
+                <a href="#" class="btn btn-outline btn-sm" id="autoNextToggle" onclick="toggleAutoNext()">🔄 Auto: ON</a>
+            </div>
+        </div>
+        
+        <div class="related-sidebar">
+            <h3>📋 Episodes</h3>
+            <div class="episode-list" id="episodeSidebar">
+                <p style="color:var(--muted);text-align:center;padding:1rem;">Loading episodes...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STREAM_BASE = 'https://megaplay.buzz/stream/mal';
+        const JIKAN_BASE = 'https://api.jikan.moe/v4';
+
+        function getParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                malId: params.get('id'),
+                episode: parseInt(params.get('ep')) || 1,
+                type: params.get('type') || 'sub'
+            };
+        }
+
+        let state = {
+            malId: null,
+            currentEp: 1,
+            type: 'sub',
+            totalEps: 0,
+            autoNext: true,
+            animeTitle: '',
+            animePoster: '',
+            serverType: 'vidrock'
+        };
+
+        function getStreamUrl(malId, ep, type) {
+            return `${STREAM_BASE}/${malId}/${ep}/${type}`;
+        }
+
+        function updatePlayer() {
+            const { malId, currentEp, type } = state;
+            if (!malId) return;
+            
+            const url = getStreamUrl(malId, currentEp, type);
+            document.getElementById('videoPlayer').src = url;
+            document.getElementById('playerLoading').classList.remove('hidden');
+            document.getElementById('episodeTitle').textContent = `Episode ${currentEp}`;
+            
+            // Update active episode in sidebar
+            document.querySelectorAll('.ep-item').forEach(item => {
+                item.classList.toggle('active', parseInt(item.dataset.ep) === currentEp);
+            });
+            
+            // Update URL without reload
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('ep', currentEp);
+            newUrl.searchParams.set('type', type);
+            window.history.replaceState({}, '', newUrl);
+            
+            // Save continue watching
+            saveContinueWatching();
+        }
+
+        function changeEpisode(delta) {
+            const newEp = state.currentEp + delta;
+            if (newEp < 1 || (state.totalEps > 0 && newEp > state.totalEps)) return;
+            state.currentEp = newEp;
+            updatePlayer();
+            document.querySelector('.player-wrapper').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchType(type) {
+            state.type = type;
+            document.getElementById('subBtn').classList.toggle('active', type === 'sub');
+            document.getElementById('dubBtn').classList.toggle('active', type === 'dub');
+            updatePlayer();
+        }
+
+        function switchServer() {
+            const sel = document.getElementById('serverSelect');
+            state.serverType = sel.value;
+            // Update stream URL based on server if needed
+            updatePlayer();
+        }
+
+        function toggleTheater() {
+            const wrapper = document.getElementById('playerWrapper');
+            if (wrapper.style.maxWidth === '100%') {
+                wrapper.style.maxWidth = '';
+                wrapper.style.aspectRatio = '16/9';
+            } else {
+                wrapper.style.maxWidth = '100%';
+                wrapper.style.aspectRatio = '21/9';
+            }
+        }
+
+        function toggleAutoNext() {
+            state.autoNext = !state.autoNext;
+            const btn = document.getElementById('autoNextToggle');
+            btn.textContent = `🔄 Auto: ${state.autoNext ? 'ON' : 'OFF'}`;
+        }
+
+        function saveContinueWatching() {
+            const { malId, currentEp, totalEps, animeTitle, animePoster } = state;
+            if (!malId) return;
+            let cont = JSON.parse(localStorage.getItem('nova_continue') || '[]');
+            cont = cont.filter(c => c.mal_id !== malId);
+            cont.unshift({
+                mal_id: malId,
+                episode: currentEp,
+                title: animeTitle,
+                poster: animePoster,
+                total_eps: totalEps,
+                progress: totalEps > 0 ? Math.round((currentEp / totalEps) * 100) : 50,
+                timestamp: Date.now()
+            });
+            if (cont.length > 30) cont = cont.slice(0, 30);
+            localStorage.setItem('nova_continue', JSON.stringify(cont));
+        }
+
+        async function fetchAnimeInfo(malId) {
+            const cacheKey = `nova_anime_${malId}`;
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (parsed.exp > Date.now()) return parsed.data;
+            }
+            const res = await fetch(`${JIKAN_BASE}/anime/${malId}`);
+            if (!res.ok) throw new Error('Anime not found');
+            const json = await res.json();
+            localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, exp: Date.now() + 1800000 }));
+            return json.data;
+        }
+
+        function buildEpisodeSidebar(totalEps, currentEp) {
+            const sidebar = document.getElementById('episodeSidebar');
+            const eps = [];
+            for (let i = 1; i <= totalEps; i++) {
+                eps.push(`
+                    <a href="#" class="ep-item${i === currentEp ? ' active' : ''}" data-ep="${i}" onclick="goToEpisode(${i}); return false;">
+                        <span class="ep-dot"></span>
+                        <span class="ep-name">Episode ${i}</span>
+                    </a>
+                `);
+            }
+            sidebar.innerHTML = eps.join('');
+        }
+
+        function goToEpisode(ep) {
+            state.currentEp = ep;
+            updatePlayer();
+        }
+
+        async function initWatchPage() {
+            const { malId, episode, type } = getParams();
+            
+            if (!malId) {
+                document.body.innerHTML = '<div style="text-align:center;padding:4rem;"><h2>No Anime ID</h2><a href="index.html">Go Home</a></div>';
+                return;
+            }
+
+            state.malId = malId;
+            state.currentEp = episode;
+            state.type = type;
+
+            // Set type buttons
+            document.getElementById('subBtn').classList.toggle('active', type === 'sub');
+            document.getElementById('dubBtn').classList.toggle('active', type === 'dub');
+
+            try {
+                const anime = await fetchAnimeInfo(malId);
+                state.totalEps = anime.episodes || 12;
+                state.animeTitle = anime.title_english || anime.title;
+                state.animePoster = anime.images?.jpg?.image_url || '';
+                
+                document.title = `Episode ${episode} - ${state.animeTitle} - NovaAnime`;
+                
+                buildEpisodeSidebar(state.totalEps, episode);
+                updatePlayer();
+                
+                // Auto-next: detect iframe load
+                const player = document.getElementById('videoPlayer');
+                player.onload = () => {
+                    document.getElementById('playerLoading').classList.add('hidden');
+                };
+                
+                // Simple auto-next simulation (in real app, detect video end)
+                // For demo, we'll just track it
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('episodeSidebar').innerHTML = 
+                    '<p style="color:var(--muted);text-align:center;padding:1rem;">Failed to load anime info</p>';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && e.shiftKey) changeEpisode(1);
+            if (e.key === 'ArrowLeft' && e.shiftKey) changeEpisode(-1);
+            if (e.key === 'f') toggleTheater();
+        });
+
+        document.addEventListener('DOMContentLoaded', initWatchPage);
+    </script>
+</body>
+</html>
