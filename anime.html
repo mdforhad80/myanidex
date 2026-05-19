@@ -100,6 +100,7 @@
             align-items: flex-end;
             background-size: cover;
             background-position: center 20%;
+            background-color: var(--bg2);
         }
         .anime-hero::after {
             content: '';
@@ -124,6 +125,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             border: 2px solid var(--glass-border);
             flex-shrink: 0;
+            background: var(--bg3);
         }
         .anime-poster img { width: 100%; height: 100%; object-fit: cover; }
         .anime-info { flex: 1; min-width: 250px; }
@@ -262,7 +264,21 @@
             margin: 0 auto 1rem;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .error-container { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+        .error-container { 
+            text-align: center; 
+            padding: 4rem 2rem; 
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .error-container h2 { color: var(--text); margin-bottom: 1rem; }
+        .retry-btn {
+            margin-top: 1.5rem;
+            display: inline-flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
         
         @media (max-width: 600px) {
             .anime-hero-content { flex-direction: column; align-items: center; text-align: center; }
@@ -280,7 +296,7 @@
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="search.html">Browse</a></li>
-            <li><a href="index.html" class="active">Anime</a></li>
+            <li><a href="#" id="randomBtn">🎲 Random</a></li>
         </ul>
     </nav>
 
@@ -292,6 +308,109 @@
     </div>
 
     <script>
+        // ==================== FALLBACK DATA ====================
+        // Built-in data for popular anime in case API fails
+        const FALLBACK_ANIME = {
+            38000: {
+                mal_id: 38000,
+                title: "Demon Slayer: Kimetsu no Yaiba",
+                title_english: "Demon Slayer: Kimetsu no Yaiba",
+                title_japanese: "鬼滅の刃",
+                images: {
+                    jpg: {
+                        image_url: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
+                        large_image_url: "https://cdn.myanimelist.net/images/anime/1286/99889l.jpg"
+                    }
+                },
+                synopsis: "Ever since the death of his father, the burden of supporting the family has fallen upon Tanjirou Kamado's shoulders. Though living impoverished on a remote mountain, the Kamado family are able to enjoy a relatively peaceful and happy life. One day, Tanjirou decides to go down to the local village to make a little money selling charcoal. On his way back, night falls, forcing Tanjirou to take shelter in the house of a strange man, who warns him of the existence of flesh-eating demons that lurk in the woods at night.",
+                type: "TV",
+                episodes: 26,
+                status: "Finished Airing",
+                score: 8.49,
+                scored_by: 2130000,
+                rank: 53,
+                popularity: 2,
+                rating: "R - 17+ (violence & profanity)",
+                duration: "24 min per ep",
+                aired: { string: "Apr 6, 2019 to Sep 28, 2019" },
+                season: "spring",
+                year: 2019,
+                broadcast: { string: "Saturdays at 23:30 (JST)" },
+                genres: [
+                    { name: "Action" }, { name: "Adventure" }, { name: "Supernatural" },
+                    { name: "Demons" }, { name: "Historical" }, { name: "Shounen" }
+                ],
+                studios: [{ name: "ufotable" }],
+                producers: [{ name: "Aniplex" }, { name: "Shueisha" }],
+                source: "Manga"
+            },
+            16498: {
+                mal_id: 16498,
+                title: "Shingeki no Kyojin",
+                title_english: "Attack on Titan",
+                title_japanese: "進撃の巨人",
+                images: {
+                    jpg: {
+                        image_url: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
+                        large_image_url: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg"
+                    }
+                },
+                synopsis: "Centuries ago, mankind was slaughtered to near extinction by monstrous humanoid creatures called Titans, forcing humans to hide in fear behind enormous concentric walls. What makes these giants truly terrifying is that their taste for human flesh is not born out of hunger but what appears to be out of pleasure.",
+                type: "TV",
+                episodes: 25,
+                status: "Finished Airing",
+                score: 8.54,
+                scored_by: 3100000,
+                rank: 11,
+                popularity: 1,
+                rating: "R - 17+ (violence & profanity)",
+                duration: "24 min per ep",
+                aired: { string: "Apr 7, 2013 to Sep 29, 2013" },
+                season: "spring",
+                year: 2013,
+                broadcast: { string: "Sundays at 01:58 (JST)" },
+                genres: [
+                    { name: "Action" }, { name: "Drama" }, { name: "Fantasy" },
+                    { name: "Mystery" }
+                ],
+                studios: [{ name: "Wit Studio" }],
+                producers: [{ name: "Production I.G" }, { name: "Kodansha" }],
+                source: "Manga"
+            },
+            1535: {
+                mal_id: 1535,
+                title: "Death Note",
+                title_english: "Death Note",
+                title_japanese: "デスノート",
+                images: {
+                    jpg: {
+                        image_url: "https://cdn.myanimelist.net/images/anime/9/9453.jpg",
+                        large_image_url: "https://cdn.myanimelist.net/images/anime/9/9453l.jpg"
+                    }
+                },
+                synopsis: "Brutal murders, petty thefts, and senseless violence pollute the human world. In contrast, the realm of death gods is a humdrum, unchanging gambling den. The ingenious 17-year-old Japanese student Light Yagami and sadistic god of death Ryuk share one belief: their worlds are rotten.",
+                type: "TV",
+                episodes: 37,
+                status: "Finished Airing",
+                score: 8.62,
+                scored_by: 3300000,
+                rank: 3,
+                popularity: 4,
+                rating: "R - 17+ (violence & profanity)",
+                duration: "23 min per ep",
+                aired: { string: "Oct 4, 2006 to Jun 27, 2007" },
+                season: "fall",
+                year: 2006,
+                broadcast: { string: "Wednesdays at 00:56 (JST)" },
+                genres: [
+                    { name: "Mystery" }, { name: "Psychological" }, { name: "Supernatural" }, { name: "Thriller" }
+                ],
+                studios: [{ name: "Madhouse" }],
+                producers: [{ name: "VAP" }, { name: "Nippon Television Network" }],
+                source: "Manga"
+            }
+        };
+
         const JIKAN_BASE = 'https://api.jikan.moe/v4';
         const STREAM_BASE = 'https://megaplay.buzz/stream/mal';
 
@@ -300,18 +419,52 @@
             return params.get(name);
         }
 
-        async function fetchAnimeInfo(malId) {
-            const cacheKey = `nova_anime_${malId}`;
-            const cached = localStorage.getItem(cacheKey);
+        // Try multiple API endpoints
+        async function fetchAnimeInfoMulti(malId) {
+            const endpoints = [
+                `${JIKAN_BASE}/anime/${malId}/full`,
+                `${JIKAN_BASE}/anime/${malId}`,
+                `https://api.jikan.moe/v4/anime/${malId}/full`,
+                `https://api.jikan.moe/v4/anime/${malId}`
+            ];
+
+            for (const url of endpoints) {
+                try {
+                    const res = await fetch(url, { 
+                        signal: AbortSignal.timeout(8000),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json.data) {
+                            // Cache the successful response
+                            localStorage.setItem(`nova_anime_${malId}`, JSON.stringify({
+                                data: json.data,
+                                exp: Date.now() + 1800000
+                            }));
+                            return json.data;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Failed to fetch from ${url}:`, e.message);
+                    continue;
+                }
+            }
+            
+            // Check cache
+            const cached = localStorage.getItem(`nova_anime_${malId}`);
             if (cached) {
                 const parsed = JSON.parse(cached);
-                if (parsed.exp > Date.now()) return parsed.data;
+                if (parsed.data) return parsed.data;
             }
-            const res = await fetch(`${JIKAN_BASE}/anime/${malId}/full`);
-            if (!res.ok) throw new Error('Anime not found');
-            const json = await res.json();
-            localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, exp: Date.now() + 1800000 }));
-            return json.data;
+            
+            // Use fallback data
+            if (FALLBACK_ANIME[malId]) {
+                console.log('Using fallback data for anime:', malId);
+                return FALLBACK_ANIME[malId];
+            }
+            
+            throw new Error('Anime not found and no fallback available');
         }
 
         function generateEpisodes(count) {
@@ -334,26 +487,52 @@
             const malId = getParam('id');
             
             if (!malId) {
-                container.innerHTML = '<div class="error-container"><h2>No Anime ID provided</h2><p>Please use ?id=MAL_ID in the URL</p><a href="index.html" class="btn btn-primary mt-2">Go Home</a></div>';
+                container.innerHTML = `
+                    <div class="error-container">
+                        <h2>🎬 Welcome to NovaAnime</h2>
+                        <p>To view an anime, add <code>?id=MAL_ID</code> to the URL.</p>
+                        <p style="margin-top:1rem;">Try these examples:</p>
+                        <div class="retry-btn">
+                            <a href="?id=38000" class="btn btn-primary">Demon Slayer</a>
+                            <a href="?id=16498" class="btn btn-outline">Attack on Titan</a>
+                            <a href="?id=1535" class="btn btn-outline">Death Note</a>
+                        </div>
+                        <p style="margin-top:2rem;font-size:0.85rem;">Or search for anime on our <a href="search.html" style="color:var(--accent);">Browse page</a></p>
+                    </div>
+                `;
                 return;
             }
 
+            // Show loading
+            container.innerHTML = `
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <p style="color:var(--muted);">Loading anime details...</p>
+                    <p style="color:var(--muted);font-size:0.8rem;">Fetching data for ID: ${malId}</p>
+                </div>
+            `;
+
             try {
-                const anime = await fetchAnimeInfo(malId);
+                const anime = await fetchAnimeInfoMulti(malId);
                 const episodes = generateEpisodes(anime.episodes || 12);
                 
                 // Update meta tags
                 document.title = `${anime.title_english || anime.title} - NovaAnime`;
-                document.querySelector('meta[name="description"]').content = anime.synopsis?.substring(0, 160) || '';
-                document.querySelector('meta[property="og:title"]').content = document.title;
-                document.querySelector('meta[property="og:description"]').content = anime.synopsis?.substring(0, 200) || '';
-                document.querySelector('meta[property="og:image"]').content = anime.images?.jpg?.large_image_url || '';
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.content = (anime.synopsis || '').substring(0, 160);
+                
+                const ogTitle = document.querySelector('meta[property="og:title"]');
+                const ogDesc = document.querySelector('meta[property="og:description"]');
+                const ogImage = document.querySelector('meta[property="og:image"]');
+                if (ogTitle) ogTitle.content = document.title;
+                if (ogDesc) ogDesc.content = (anime.synopsis || '').substring(0, 200);
+                if (ogImage && anime.images?.jpg?.large_image_url) ogImage.content = anime.images.jpg.large_image_url;
 
                 const title = anime.title_english || anime.title;
                 const jpTitle = anime.title_japanese || '';
                 const synonyms = anime.title_synonyms?.join(', ') || '';
                 const banner = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
-                const poster = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
+                const poster = banner;
                 const synopsis = anime.synopsis || 'No synopsis available.';
                 const genres = anime.genres?.map(g => g.name).join(', ') || 'N/A';
                 const studios = anime.studios?.map(s => s.name).join(', ') || 'N/A';
@@ -365,7 +544,8 @@
                 const type = anime.type || 'N/A';
                 const status = anime.status || 'N/A';
                 const aired = anime.aired?.string || 'N/A';
-                const premiered = anime.season && anime.year ? `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}` : 'N/A';
+                const premiered = anime.season && anime.year ? 
+                    `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}` : 'N/A';
                 const broadcast = anime.broadcast?.string || 'N/A';
                 const duration = anime.duration || 'N/A';
                 const rating = anime.rating || 'N/A';
@@ -376,7 +556,7 @@
                     <div class="anime-hero" style="background-image: url('${banner}');">
                         <div class="anime-hero-content">
                             <div class="anime-poster">
-                                <img src="${poster}" alt="${title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22220%22 height=%22310%22 fill=%22%231a1a24%22><rect width=%22220%22 height=%22310%22/><text x=%22110%22 y=%22155%22 text-anchor=%22middle%22 fill=%22%239ca3af%22>No Image</text></svg>'">
+                                <img src="${poster}" alt="${title}" onerror="this.parentElement.style.background='var(--bg3)'; this.style.display='none';">
                             </div>
                             <div class="anime-info">
                                 <h1>${title}</h1>
@@ -406,9 +586,9 @@
                                     <div class="detail-item"><strong>Source</strong><span>${source}</span></div>
                                 </div>
                                 <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
-                                    <a href="watch.html?id=${malId}&ep=1" class="btn btn-primary">▶ Watch Now</a>
-                                    <a href="https://myanimelist.net/anime/${malId}/" target="_blank" class="btn btn-outline">🔗 MAL</a>
-                                    <button class="btn btn-outline btn-sm" onclick="addToWatchlist(${malId}, '${title.replace(/'/g, "\\'")}', '${poster}')">⭐ Watchlist</button>
+                                    <a href="watch.html?id=${malId}&ep=1" class="btn btn-primary">▶ Watch Episode 1</a>
+                                    <a href="https://myanimelist.net/anime/${malId}/" target="_blank" class="btn btn-outline">🔗 MAL Page</a>
+                                    <button class="btn btn-outline btn-sm" onclick="addToWatchlist(${malId}, '${title.replace(/'/g, "\\'")}', '${poster.replace(/'/g, "\\'")}')">⭐ Watchlist</button>
                                 </div>
                             </div>
                         </div>
@@ -416,7 +596,7 @@
 
                     <div class="episode-section">
                         <div class="episode-header">
-                            <h2>📺 Episodes</h2>
+                            <h2>📺 Episodes (${episodes.length} total)</h2>
                             <div class="type-toggle">
                                 <button class="active" onclick="switchEpType('sub', this)">Sub</button>
                                 <button onclick="switchEpType('dub', this)">Dub</button>
@@ -433,7 +613,6 @@
                     </div>
                 `;
 
-                // Store current state for episode type switching
                 window.currentMalId = malId;
                 window.currentEpisodes = episodes;
                 window.currentType = 'sub';
@@ -442,10 +621,20 @@
                 console.error('Error loading anime:', error);
                 container.innerHTML = `
                     <div class="error-container">
-                        <h2>😢 Anime Not Found</h2>
-                        <p>The anime with ID "${malId}" could not be loaded. It may not exist or the API is temporarily unavailable.</p>
-                        <a href="index.html" class="btn btn-primary" style="margin-top:1rem;">Return Home</a>
-                        <a href="search.html" class="btn btn-outline" style="margin-top:1rem;margin-left:0.5rem;">Search Anime</a>
+                        <h2>😢 Unable to Load Anime</h2>
+                        <p>The anime with ID <strong>"${malId}"</strong> could not be loaded.</p>
+                        <p style="margin-top:0.5rem;font-size:0.85rem;">This could be due to API rate limiting or the ID doesn't exist.</p>
+                        <p style="margin-top:1rem;">Try these working examples:</p>
+                        <div class="retry-btn">
+                            <a href="?id=38000" class="btn btn-primary">Demon Slayer (38000)</a>
+                            <a href="?id=16498" class="btn btn-outline">Attack on Titan (16498)</a>
+                            <a href="?id=1535" class="btn btn-outline">Death Note (1535)</a>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:1rem;" onclick="location.reload()">🔄 Retry Current Page</button>
+                        <p style="margin-top:1.5rem;font-size:0.85rem;">
+                            <a href="index.html" style="color:var(--accent);">← Back to Home</a> | 
+                            <a href="search.html" style="color:var(--accent);">Search Anime</a>
+                        </p>
                     </div>
                 `;
             }
@@ -453,13 +642,13 @@
 
         function switchEpType(type, btn) {
             window.currentType = type;
-            // Update active button
             document.querySelectorAll('.type-toggle button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Update episode links
             const malId = window.currentMalId;
             const grid = document.getElementById('episodeGrid');
+            if (!grid) return;
+            
             const cards = grid.querySelectorAll('.episode-card');
             cards.forEach(card => {
                 const ep = card.dataset.ep;
@@ -472,26 +661,53 @@
             const idx = wl.findIndex(w => w.mal_id === malId);
             if (idx >= 0) {
                 wl.splice(idx, 1);
-                showToast('Removed from watchlist');
+                showToast('❌ Removed from watchlist');
             } else {
                 wl.unshift({ mal_id: malId, title, poster, timestamp: Date.now() });
-                showToast('Added to watchlist!');
+                showToast('⭐ Added to watchlist!');
             }
             localStorage.setItem('nova_watchlist', JSON.stringify(wl));
         }
 
         function showToast(msg) {
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+            
             const t = document.createElement('div');
-            t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--accent);color:var(--text);padding:12px 20px;border-radius:50px;z-index:9999;font-weight:500;animation:slideUp 0.4s ease-out;';
+            t.className = 'toast-notification';
+            t.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                background: var(--bg2, #121218);
+                border: 1px solid var(--accent, #8b5cf6);
+                color: var(--text, #f3f4f6);
+                padding: 12px 20px;
+                border-radius: 50px;
+                z-index: 9999;
+                font-weight: 500;
+                animation: slideUp 0.4s ease-out;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            `;
             t.textContent = msg;
             document.body.appendChild(t);
             setTimeout(() => t.remove(), 3000);
         }
 
+        // Random anime button
+        document.getElementById('randomBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ids = Object.keys(FALLBACK_ANIME);
+            const randomId = ids[Math.floor(Math.random() * ids.length)];
+            window.location.href = `?id=${randomId}`;
+        });
+
+        // Add slideUp animation
+        const style = document.createElement('style');
+        style.textContent = '@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }';
+        document.head.appendChild(style);
+
         document.addEventListener('DOMContentLoaded', renderAnimePage);
     </script>
-    <style>
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    </style>
 </body>
 </html>
