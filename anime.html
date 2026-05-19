@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Anime Details - NovaAnime">
+    <meta property="og:title" content="Anime Details - NovaAnime">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0b0b0f">
+    <link rel="manifest" href="/manifest.json">
+    <title>Anime Details - NovaAnime</title>
+    <style>
+        :root {
+            --bg: #0b0b0f;
+            --bg2: #121218;
+            --bg3: #1a1a24;
+            --accent: #8b5cf6;
+            --accent2: #d946ef;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --glass: rgba(18, 18, 24, 0.85);
+            --glass-border: rgba(139, 92, 246, 0.2);
+            --glow: 0 0 25px rgba(139, 92, 246, 0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        body::-webkit-scrollbar { width: 6px; }
+        body::-webkit-scrollbar-track { background: var(--bg); }
+        body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        .nav-logo .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--glow);
+        }
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(139,92,246,0.15); }
+        @media (max-width: 600px) {
+            .navbar { padding: 0 1rem; }
+            .nav-links a { font-size: 0.8rem; padding: 6px 10px; }
+            .nav-logo { font-size: 1.2rem; }
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        
+        .anime-hero {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            background-size: cover;
+            background-position: center 20%;
+        }
+        .anime-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, var(--bg) 5%, transparent 50%, rgba(11,11,15,0.6) 100%);
+        }
+        .anime-hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .anime-poster {
+            width: 220px;
+            height: 310px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 2px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+        .anime-poster img { width: 100%; height: 100%; object-fit: cover; }
+        .anime-info { flex: 1; min-width: 250px; }
+        .anime-info h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.3rem; text-shadow: 0 2px 20px rgba(0,0,0,0.8); }
+        .anime-info .alt-title { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.8rem; }
+        .anime-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .anime-meta .badge {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(6px);
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .anime-meta .badge.accent { background: var(--accent); color: #fff; }
+        .synopsis {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            max-width: 700px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .detail-item { font-size: 0.85rem; }
+        .detail-item strong { color: var(--text); display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .detail-item span { color: var(--muted); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            text-decoration: none;
+            letter-spacing: 0.2px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.35);
+        }
+        .btn-primary:hover { box-shadow: 0 6px 30px rgba(217,70,239,0.55); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background: rgba(139,92,246,0.1); }
+        .btn-sm { padding: 8px 16px; font-size: 0.8rem; }
+
+        .episode-section { margin-top: 2rem; }
+        .episode-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .episode-header h2 { font-size: 1.4rem; font-weight: 700; }
+        .type-toggle {
+            display: flex;
+            background: var(--bg2);
+            border-radius: 50px;
+            padding: 4px;
+            border: 1px solid var(--glass-border);
+        }
+        .type-toggle button {
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        .type-toggle button.active { background: var(--accent); color: #fff; }
+        .episode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+        }
+        .episode-card {
+            background: var(--bg2);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .episode-card:hover {
+            border-color: var(--accent);
+            background: rgba(139,92,246,0.08);
+            transform: translateY(-2px);
+        }
+        .episode-card .ep-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(139,92,246,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .episode-card .ep-title { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .loading-container { text-align: center; padding: 4rem 2rem; }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--bg3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-container { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+        
+        @media (max-width: 600px) {
+            .anime-hero-content { flex-direction: column; align-items: center; text-align: center; }
+            .anime-poster { width: 160px; height: 230px; }
+            .anime-info h1 { font-size: 1.5rem; }
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-icon">✦</span> NovaAnime
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="search.html">Browse</a></li>
+            <li><a href="index.html" class="active">Anime</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="animeContainer">
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p style="color:var(--muted);">Loading anime details...</p>
+        </div>
+    </div>
+
+    <script>
+        const JIKAN_BASE = 'https://api.jikan.moe/v4';
+        const STREAM_BASE = 'https://megaplay.buzz/stream/mal';
+
+        function getParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        async function fetchAnimeInfo(malId) {
+            const cacheKey = `nova_anime_${malId}`;
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (parsed.exp > Date.now()) return parsed.data;
+            }
+            const res = await fetch(`${JIKAN_BASE}/anime/${malId}/full`);
+            if (!res.ok) throw new Error('Anime not found');
+            const json = await res.json();
+            localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, exp: Date.now() + 1800000 }));
+            return json.data;
+        }
+
+        function generateEpisodes(count) {
+            const episodes = [];
+            const total = count || 12;
+            for (let i = 1; i <= total; i++) {
+                episodes.push({
+                    episode: String(i),
+                    servers: [
+                        { sub: 'Vidrock', value: `${STREAM_BASE}/MAL_ID/${i}/sub` },
+                        { dub: 'Vidplus', value: `${STREAM_BASE}/MAL_ID/${i}/dub` }
+                    ]
+                });
+            }
+            return episodes;
+        }
+
+        async function renderAnimePage() {
+            const container = document.getElementById('animeContainer');
+            const malId = getParam('id');
+            
+            if (!malId) {
+                container.innerHTML = '<div class="error-container"><h2>No Anime ID provided</h2><p>Please use ?id=MAL_ID in the URL</p><a href="index.html" class="btn btn-primary mt-2">Go Home</a></div>';
+                return;
+            }
+
+            try {
+                const anime = await fetchAnimeInfo(malId);
+                const episodes = generateEpisodes(anime.episodes || 12);
+                
+                // Update meta tags
+                document.title = `${anime.title_english || anime.title} - NovaAnime`;
+                document.querySelector('meta[name="description"]').content = anime.synopsis?.substring(0, 160) || '';
+                document.querySelector('meta[property="og:title"]').content = document.title;
+                document.querySelector('meta[property="og:description"]').content = anime.synopsis?.substring(0, 200) || '';
+                document.querySelector('meta[property="og:image"]').content = anime.images?.jpg?.large_image_url || '';
+
+                const title = anime.title_english || anime.title;
+                const jpTitle = anime.title_japanese || '';
+                const synonyms = anime.title_synonyms?.join(', ') || '';
+                const banner = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
+                const poster = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
+                const synopsis = anime.synopsis || 'No synopsis available.';
+                const genres = anime.genres?.map(g => g.name).join(', ') || 'N/A';
+                const studios = anime.studios?.map(s => s.name).join(', ') || 'N/A';
+                const producers = anime.producers?.map(p => p.name).join(', ') || 'N/A';
+                const score = anime.score || 'N/A';
+                const scoredBy = anime.scored_by?.toLocaleString() || 'N/A';
+                const rank = anime.rank || 'N/A';
+                const popularity = anime.popularity || 'N/A';
+                const type = anime.type || 'N/A';
+                const status = anime.status || 'N/A';
+                const aired = anime.aired?.string || 'N/A';
+                const premiered = anime.season && anime.year ? `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}` : 'N/A';
+                const broadcast = anime.broadcast?.string || 'N/A';
+                const duration = anime.duration || 'N/A';
+                const rating = anime.rating || 'N/A';
+                const episodes_count = anime.episodes || 'Unknown';
+                const source = anime.source || 'N/A';
+
+                container.innerHTML = `
+                    <div class="anime-hero" style="background-image: url('${banner}');">
+                        <div class="anime-hero-content">
+                            <div class="anime-poster">
+                                <img src="${poster}" alt="${title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22220%22 height=%22310%22 fill=%22%231a1a24%22><rect width=%22220%22 height=%22310%22/><text x=%22110%22 y=%22155%22 text-anchor=%22middle%22 fill=%22%239ca3af%22>No Image</text></svg>'">
+                            </div>
+                            <div class="anime-info">
+                                <h1>${title}</h1>
+                                ${jpTitle ? `<p class="alt-title">${jpTitle}${synonyms ? ' · ' + synonyms : ''}</p>` : ''}
+                                <div class="anime-meta">
+                                    <span class="badge accent">⭐ ${score}</span>
+                                    <span class="badge">${type}</span>
+                                    <span class="badge">${status}</span>
+                                    <span class="badge">${episodes_count} eps</span>
+                                    <span class="badge">${rating}</span>
+                                </div>
+                                <p class="synopsis">${synopsis}</p>
+                                <div class="detail-grid">
+                                    <div class="detail-item"><strong>Country</strong><span>Japan</span></div>
+                                    <div class="detail-item"><strong>Genres</strong><span>${genres}</span></div>
+                                    <div class="detail-item"><strong>Premiered</strong><span>${premiered}</span></div>
+                                    <div class="detail-item"><strong>Date Aired</strong><span>${aired}</span></div>
+                                    <div class="detail-item"><strong>Broadcast</strong><span>${broadcast}</span></div>
+                                    <div class="detail-item"><strong>Episodes</strong><span>${episodes_count}</span></div>
+                                    <div class="detail-item"><strong>Duration</strong><span>${duration}</span></div>
+                                    <div class="detail-item"><strong>Status</strong><span>${status}</span></div>
+                                    <div class="detail-item"><strong>Scores</strong><span>${score} (${scoredBy} users)</span></div>
+                                    <div class="detail-item"><strong>Rank</strong><span>#${rank}</span></div>
+                                    <div class="detail-item"><strong>Popularity</strong><span>#${popularity}</span></div>
+                                    <div class="detail-item"><strong>Studios</strong><span>${studios}</span></div>
+                                    <div class="detail-item"><strong>Producers</strong><span>${producers}</span></div>
+                                    <div class="detail-item"><strong>Source</strong><span>${source}</span></div>
+                                </div>
+                                <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+                                    <a href="watch.html?id=${malId}&ep=1" class="btn btn-primary">▶ Watch Now</a>
+                                    <a href="https://myanimelist.net/anime/${malId}/" target="_blank" class="btn btn-outline">🔗 MAL</a>
+                                    <button class="btn btn-outline btn-sm" onclick="addToWatchlist(${malId}, '${title.replace(/'/g, "\\'")}', '${poster}')">⭐ Watchlist</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="episode-section">
+                        <div class="episode-header">
+                            <h2>📺 Episodes</h2>
+                            <div class="type-toggle">
+                                <button class="active" onclick="switchEpType('sub', this)">Sub</button>
+                                <button onclick="switchEpType('dub', this)">Dub</button>
+                            </div>
+                        </div>
+                        <div class="episode-grid" id="episodeGrid">
+                            ${episodes.map(ep => `
+                                <a href="watch.html?id=${malId}&ep=${ep.episode}&type=sub" class="episode-card" data-ep="${ep.episode}">
+                                    <span class="ep-num">${ep.episode}</span>
+                                    <span class="ep-title">Episode ${ep.episode}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                // Store current state for episode type switching
+                window.currentMalId = malId;
+                window.currentEpisodes = episodes;
+                window.currentType = 'sub';
+
+            } catch (error) {
+                console.error('Error loading anime:', error);
+                container.innerHTML = `
+                    <div class="error-container">
+                        <h2>😢 Anime Not Found</h2>
+                        <p>The anime with ID "${malId}" could not be loaded. It may not exist or the API is temporarily unavailable.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top:1rem;">Return Home</a>
+                        <a href="search.html" class="btn btn-outline" style="margin-top:1rem;margin-left:0.5rem;">Search Anime</a>
+                    </div>
+                `;
+            }
+        }
+
+        function switchEpType(type, btn) {
+            window.currentType = type;
+            // Update active button
+            document.querySelectorAll('.type-toggle button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update episode links
+            const malId = window.currentMalId;
+            const grid = document.getElementById('episodeGrid');
+            const cards = grid.querySelectorAll('.episode-card');
+            cards.forEach(card => {
+                const ep = card.dataset.ep;
+                card.href = `watch.html?id=${malId}&ep=${ep}&type=${type}`;
+            });
+        }
+
+        function addToWatchlist(malId, title, poster) {
+            let wl = JSON.parse(localStorage.getItem('nova_watchlist') || '[]');
+            const idx = wl.findIndex(w => w.mal_id === malId);
+            if (idx >= 0) {
+                wl.splice(idx, 1);
+                showToast('Removed from watchlist');
+            } else {
+                wl.unshift({ mal_id: malId, title, poster, timestamp: Date.now() });
+                showToast('Added to watchlist!');
+            }
+            localStorage.setItem('nova_watchlist', JSON.stringify(wl));
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--accent);color:var(--text);padding:12px 20px;border-radius:50px;z-index:9999;font-weight:500;animation:slideUp 0.4s ease-out;';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', renderAnimePage);
+    </script>
+    <style>
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</body>
+</html>
