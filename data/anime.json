@@ -1,42 +1,18 @@
 [
   {
-    "id": "local-custom-1",
     "mal_id": 38000,
-    "title": "Demon Slayer",
-    "title_japanese": "鬼滅の刃",
-    "type": "TV",
-    "episodes": 26,
-    "status": "Finished Airing",
-    "score": 8.6,
-    "synopsis": "Tanjiro Kamado joins the Demon Slayer Corps after his family is slaughtered and his sister Nezuko is turned into a demon.",
-    "genres": ["Action", "Fantasy", "Historical"],
-    "image": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
-    "year": 2019,
-    "featured": true,
-    "embed_providers": {
-      "hianime": "demon-slayer-kimetsu-no-yaiba-3498",
-      "gogoanime": "kimetsu-no-yaiba"
+    "title": "My Favorite Anime",
+    "image": "https://example.com/poster.jpg",
+    "synopsis": "An exciting story...",
+    "genres": ["Action", "Adventure"],
+    "episodes_count": 12,
+    "episodes_streamin": {
+      "01": "https://streamtape.com/e/abc123",
+      "02": "https://streamtape.com/e/def456"
     },
-    "published_at": "2025-01-01"
-  },
-  {
-    "id": "local-custom-2",
-    "mal_id": 40748,
-    "title": "Jujutsu Kaisen",
-    "title_japanese": "呪術廻戦",
+    "published_at": "2025-01-01",
+    "status": "Completed",
     "type": "TV",
-    "episodes": 24,
-    "status": "Finished Airing",
-    "score": 8.7,
-    "synopsis": "Yuji Itadori swallows a cursed finger and enters the world of sorcerers and curses.",
-    "genres": ["Action", "Supernatural", "Fantasy"],
-    "image": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",
-    "year": 2020,
-    "featured": false,
-    "embed_providers": {
-      "hianime": "jujutsu-kaisen-tv-534",
-      "gogoanime": "jujutsu-kaisen"
-    },
-    "published_at": "2025-01-02"
+    "rating": "PG-13"
   }
 ]
