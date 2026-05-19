@@ -1,64 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Anime Streaming</title>
+    <meta charset="UTF-8">
 
-  <meta name="theme-color" content="#8b5cf6">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/responsive.css">
+    <title>Anime Streaming</title>
 
-  <link rel="manifest" href="manifest.json">
+    <meta
+        name="theme-color"
+        content="#8b5cf6"
+    >
 
-  <script defer src="assets/js/app.js"></script>
-  <script defer src="assets/js/home.js"></script>
+    <meta
+        property="og:title"
+        content="Anime Streaming"
+    >
+
+    <meta
+        property="og:type"
+        content="website"
+    >
+
+    <link
+        rel="manifest"
+        href="./manifest.json"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/responsive.css"
+    >
+
+    <script
+        defer
+        src="./assets/js/home.js"
+    ></script>
+
 </head>
+
 <body>
 
-<div class="loading-screen">
-  <div class="loader"></div>
-</div>
+    <!-- NAVBAR -->
 
-<header class="navbar">
-  <div class="logo">ANIME</div>
+    <header class="navbar">
 
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="top.html">Top</a>
-    <a href="schedule.html">Schedule</a>
-    <a href="search.html">Search</a>
-  </nav>
-</header>
+        <div class="logo">
+            ANIME
+        </div>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Watch Anime Online</h1>
-    <p>Stream latest anime in HD quality.</p>
-  </div>
-</section>
+        <nav>
 
-<section>
-  <div class="section-title">
-    Trending Anime
-  </div>
+            <a href="./index.html">
+                Home
+            </a>
 
-  <div id="trending" class="anime-grid"></div>
-</section>
+            <a href="./search.html">
+                Search
+            </a>
 
-<section>
-  <div class="section-title">
-    Continue Watching
-  </div>
+            <a href="./top.html">
+                Top
+            </a>
 
-  <div id="continueWatching" class="anime-grid"></div>
-</section>
+            <a href="./schedule.html">
+                Schedule
+            </a>
 
-<footer class="footer">
-  Anime Streaming © 2026
-</footer>
+        </nav>
+
+    </header>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+                Watch Anime Online
+            </h1>
+
+            <p>
+                Stream latest anime in HD quality
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- TRENDING -->
+
+    <section>
+
+        <div class="section-title">
+            Trending Anime
+        </div>
+
+        <div
+            id="trending"
+            class="anime-grid"
+        ></div>
+
+    </section>
 
 </body>
+
 </html>
