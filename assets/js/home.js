@@ -1,43 +1,65 @@
 async function loadTrending(){
 
-    const container =
-    document.getElementById("trending");
+    try{
 
-    const animeList = await fetch(
-        "data/anime.json"
-    ).then(r=>r.json());
+        const container =
+        document.getElementById("trending");
 
-    for(const anime of animeList){
+        const animeList = await fetch(
+            "./data/anime.json"
+        ).then(res=>res.json());
 
-        const data = await fetch(
-            `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-        ).then(r=>r.json());
+        for(const anime of animeList){
 
-        const item = data.data;
+            const response = await fetch(
+                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
+            );
 
-        container.innerHTML += `
-        <a href="anime.html?id=${item.mal_id}">
+            const json = await response.json();
 
-            <div class="anime-card">
+            const item = json.data;
 
-                <img src="${item.images.webp.large_image_url}">
+            container.innerHTML += `
 
-                <div class="overlay">
+            <a href="./anime.html?id=${item.mal_id}">
 
-                    <h3>${item.title}</h3>
+                <div class="anime-card">
 
-                    <p>
-                    ⭐ ${item.score || 'N/A'}
-                    • ${item.episodes || '?'} EP
-                    </p>
+                    <img
+                        loading="lazy"
+                        src="${item.images.webp.large_image_url}"
+                        alt="${item.title}"
+                    >
+
+                    <div class="overlay">
+
+                        <h3>
+                            ${item.title}
+                        </h3>
+
+                        <p>
+                            ⭐ ${item.score || "N/A"}
+                            •
+                            ${item.episodes || "?"} EP
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </div>
+            </a>
 
-        </a>
-        `;
+            `;
+        }
+
     }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
 }
 
 loadTrending();
