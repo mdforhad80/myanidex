@@ -1,0 +1,8 @@
+{
+  "name":"Anime Streaming",
+  "short_name":"Anime",
+  "theme_color":"#8b5cf6",
+  "background_color":"#0b0b0f",
+  "display":"standalone",
+  "start_url":"/"
+}
